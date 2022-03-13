@@ -41,6 +41,30 @@
 
     <div id = "container2" class="container p-5 my-5 bg-white text-drk">
         <h2 id = "heading2">upload items</h2>
+        <form action="results.html" method="GET">
+            <div class="mb-3 mt-3">
+                <label >Item Name:</label>
+                <input type="text" class="form-control" name="name" placeholder="Enter item name">
+            </div>
+            <div class="mb-3 mt-3">
+                <label type="text">Description:</label>
+                <textarea class="form-control" rows="5" id="comment" name="description"></textarea>
+            </div>
+            <div class="mb-3">
+                <label >Price (credits):</label>
+                <select class="form-select" name = "Price">
+                    <option>10</option>
+                    <option>20</option>
+                    <option>30</option>
+                    <option>40</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="img">Select image:</label>
+                <input type="file" id="img" name="img" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
     </div>
 </div>
 
