@@ -25,7 +25,7 @@
                     <a class="nav-link" href="/my_rented_items">My Item's Rented</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/rented_items">Rent Items</a>
+                    <a class="nav-link" href="/search_items">Search Items</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/add_items">Upload Items</a>
@@ -34,6 +34,25 @@
         </div>
     </div>
 </nav>
+
+<hr>
+<hr>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == "error" %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+                {% elif category == "success" %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <div class="container-fluid p-5 my-5 bg-white text-drk">
     <h1 id = "mainHeading">FrackHub</h1>

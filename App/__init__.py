@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, request, flash
-from .models import db, User, Item
+from flask import Flask, render_template, redirect, request, flash, send_file, url_for
+from .models import db, User, Item, Offers, Rented
 import os
 
 
 __all__ = ("create_app", "User", "Item", "render_template",
-           "redirect", "request", "flash", "add_new_user")
+           "redirect", "request", "flash", "add_new_user", "send_file",
+           "url_for", "add_new_item", "Offers", "add_new_offer", "db", "Rented")
 
 
 def create_app():
@@ -28,3 +29,12 @@ def add_new_user(new_user: User):
     db.session.add(new_user)
     db.session.commit()
 
+
+def add_new_item(new_item: Item):
+    db.session.add(new_item)
+    db.session.commit()
+
+
+def add_new_offer(new_offer: Offers):
+    db.session.add(new_offer)
+    db.session.commit()
