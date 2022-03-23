@@ -1,0 +1,6 @@
+#mainHeading{text-align-last: center}
+#heading2{text-align-last: center}
+#itemPrice{text-align-last: end;}
+.card{height:270px;}
+.card:hover{box-shadow: 0 10px 20px grey;}
+#restoreBtnWrap{text-align-last: end}
