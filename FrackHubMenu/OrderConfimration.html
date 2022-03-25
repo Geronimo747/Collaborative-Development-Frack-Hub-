@@ -19,33 +19,37 @@
         <div class="collapse navbar-collapse" id="mynavbar">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a style="color: white" class="nav-link" href="MyItems.html">My Item's</a>
+                    <a id = "navLink1" class="nav-link" href="MyItems.html">My Item's</a>
                 </li>
                 <li class="nav-item">
-                    <a style="color: white" class="nav-link" href="MyItemsRented.html">My Item's Rented</a>
+                    <a id = "navLink2" class="nav-link" href="MyItemsRented.html">My Item's Rented</a>
                 </li>
                 <li class="nav-item">
-                    <a style="color: white" class="nav-link" href="SearchItems.html">Search Items</a>
+                    <a id = "navLink3" class="nav-link" href="SearchItems.html">Search Items</a>
                 </li>
                 <li class="nav-item">
-                    <a style="color: white" class="nav-link" href="UploadItems.html">Upload Items</a>
+                    <a id = "navLink4" class="nav-link" href="UploadItems.html">Upload Items</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
+<br><br>
 
-<div class="container-fluid p-5 my-5 bg-white text-drk">
-    <div id = "restoreBtnWrap">
-        <button id = "creditBtn" type="button" class="btn btn-primary" disabled>Credits
-            <span class="badge bg-danger">100</span>
-        </button>
+<div class="container my-5 bg-white text-drk">
+    <div id = "pin">
+        <img src="pin.png" height="80">
     </div>
+    <span style="font-size: 20px; background-color: #900C19; color: #FFFFFF; float: right;" class="badge">100</span>
+    <h3 style="font-size: 26px; float: right; padding-right: 10px">Credits</h3>
     <h1 id = "mainHeading">FrackHub</h1>
     <hr>
-</div>
+</div><br>
 
-<div id = "container2" class="container my-5 bg-light text-drk">
+<div id = "container2" class="container my-5 bg-white text-drk">
+    <div id = "pin1">
+        <img src="pin.png" height="80">
+    </div>
     <h2 id = "heading2">Order Confirmation</h2>
     <br>
     <h4 style="float: left">Item name</h4>
@@ -55,8 +59,8 @@
         <img src="lawnmower.jpg" height="194" width="259"><br><br>
     </div>
 
-    <button style="float: left" type="button" onclick="" class="btn btn-success">Accept</button>
-    <button style="float: right" type="button" onclick="" class="btn btn-danger">Decline</button>
+    <button id = "acceptBtn" type="button" onclick="" class="btn">Accept</button>
+    <button id = "declineBtn" type="button" onclick="" class="btn">Decline</button>
     <div style="clear: both"></div>
 </div>
 
