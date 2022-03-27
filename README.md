@@ -24,5 +24,5 @@ with app.app_context():
 In a terminal, command prompt for windows, make sure you're in the same directory as the app.py file.
 Then run it with python, for example:
 ```
-python app.py
+python main.py
 ```
