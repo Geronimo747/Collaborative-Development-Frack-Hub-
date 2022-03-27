@@ -26,12 +26,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     items = db.relationship("Item", backref="items", lazy=True)
     requests = db.relationship("Offers", backref="requests", lazy=True)
-
-
-class Rented(db.Model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    offer_id = db.Column(db.Integer, db.ForeignKey("offers.id"), nullable=False)
-    returned = db.Column(db.Boolean(), nullable=False, default=0)
+    address = db.Column(db.String(255), nullable=False)
+    postcode = db.Column(db.String(10), nullable=False)
+    number = db.Column(db.String(14))
+    dob = db.Column(db.DateTime())
 
 
 # Table for offers concerning the items
@@ -40,4 +38,4 @@ class Offers(db.Model):
     item_id = db.Column(db.Integer, db.ForeignKey("item.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     answered = db.Column(db.Boolean(), nullable=False, default=False)
-    rent_status = db.relationship("Rented", backref="rent", lazy=True)
+    returned = db.Column(db.Boolean(), nullable=False, default=False)

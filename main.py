@@ -2,7 +2,7 @@ from App import *
 from flask_login.login_manager import LoginManager
 from flask_login import logout_user, login_required, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+from datetime import timedelta, datetime
 import flask_sqlalchemy
 from io import BytesIO
 import base64
@@ -64,16 +64,27 @@ def login_route():
 
 @app.route("/signup", methods=("GET", "POST"))
 def signup_route():
+    code = 200
+
     if request.method == "POST":
         form = request.form.to_dict()
 
         # Checks the form has been filled in.
         if not form["email"]:
             flash(message="You need to enter an email.", category="error")
-        elif not form["name"]:
-            flash(message="You need to enter a name.", category="error")
+            code = 400
+        elif not form["fname"]:
+            flash(message="You need to enter a first name.", category="error")
+            code = 400
         elif not form["pswd"]:
             flash(message="You need to enter a password.", category="error")
+            code = 400
+        elif not form["address"]:
+            flash("You need to enter an address.", category="error")
+            code = 400
+        elif not form["postcode"]:
+            flash("You need to enter a postcode.", category="error")
+            code = 400
         else:
 
             # Makes sure the user isn't unique.
@@ -83,14 +94,25 @@ def signup_route():
 
             # Adds the new user to the database.
             else:
+                dob = None
+
+                if form["DoB"]:
+                    year, month, day = form["DoB"].split("-")
+                    dob = datetime(year=year, month=month, day=day)
+
                 psw = SALT + form["pswd"]
-                new_user = User(name=form["name"], email=form["email"],
-                                password=generate_password_hash(psw, "sha256"))
+                new_user = User(name=f'{form["fname"]} {form["lname"]}', email=form["email"],
+                                password=generate_password_hash(psw, "sha256"),
+                                postcode=form["postcode"],
+                                address=form["address"],
+                                number=form["phone"] if form["phone"] else None,
+                                dob=dob)
+
                 add_new_user(new_user)
                 flash(message="Created new account.", category="success")
                 return redirect("/login")
 
-    return render_template("login/customerSignUp.html")
+    return render_template("login/customerSignUp.html", code=code)
 
 
 @app.route("/home")
@@ -109,21 +131,48 @@ def my_items_view():
         offers[x.id] = []
 
         for y in x.offers:
-            offers[x.id].append(User.query.get(y.user_id))
+            if y.answered == False:
+                offers[x.id].append({"user": User.query.get(y.user_id), "offer": y})
 
     return render_template("menu/MyItems.html", items=current_user.items, offers=offers)
 
 
-@app.route("/my_rented_items")
+@app.route("/my_rented_items", methods=("GET", "POST"))
 @login_required
 def my_rented_items_view():
-    all_offers = Offers.query.filter(db.and_(Offers.user_id == current_user.id)).all()
+    """Loads all the items the user is renting from other people."""
+
+    all_offers = Offers.query.filter(db.and_(Offers.user_id == current_user.id,
+                                             Offers.answered == True,
+                                             Offers.returned == False)).all()
+
+    if request.method == "POST":
+        form_data = request.form.to_dict()
+
+        if "return" in form_data:
+            item_id = int(form_data["return"])
+            item = Item.query.get(item_id)
+
+            if item is None:
+                flash("Error returning item.", "error")
+
+            else:
+                for offer in all_offers:
+                    if offer.item_id == item.id:
+                        item.is_rented = False
+                        offer.returned = True
+                        db.session.commit()
+                        flash("Successfully returned item.", "success")
+
+                        all_offers = Offers.query.filter(db.and_(Offers.user_id == current_user.id,
+                                                                 Offers.answered == True,
+                                                                 Offers.returned == False)).all()
+                        break
+
     the_items = []
 
     for x in all_offers:
-        rent_status = Rented.query.filter(db.and_(Rented.offer_id == x.id)).first()
-        if not rent_status.returned:
-            the_items.append(Item.query.get(x.item_id))
+        the_items.append(Item.query.get(x.item_id))
 
     return render_template("menu/MyItemsRented.html", items=the_items)
 
@@ -131,8 +180,9 @@ def my_rented_items_view():
 @app.route("/search_items", methods=["GET", "POST"])
 @login_required
 def rented_items_view():
-    result = Item.query.all()
+    result = Item.query.filter(Item.is_rented == 0).all()
 
+    # A request is being made to rent an item on the list
     if request.method == "POST":
 
         form_data = request.form.to_dict()
@@ -140,9 +190,17 @@ def rented_items_view():
 
         all_offers = Offers.query.filter(
             db.and_(Offers.user_id == current_user.id,
-                    Offers.item_id == item_id)).first()
+                    Offers.item_id == item_id,
+                    Offers.answered == False)).first()
 
-        if all_offers is None:
+        the_item = Item.query.get(item_id)
+        if the_item is None:
+            flash("Error finding item.", "error")
+
+        elif the_item.is_rented is True:
+            flash("Item is already being rented.", "error")
+
+        elif all_offers is None:
 
             # Creates the new offer
             new_offer = Offers(item_id=item_id, user_id=current_user.id)
@@ -150,8 +208,9 @@ def rented_items_view():
             flash("Made offer request", "success")
 
         else:
-            flash("Already rending", "error")
+            flash("Already renting.", "error")
 
+    # Loads all the items not currently being rented.
     offers = []
 
     for x in result:
@@ -169,8 +228,6 @@ def rented_items_view():
 @app.route("/add_items", methods=["POST", "GET"])
 @login_required
 def add_items_view():
-    result = Item.query.all()
-
     if request.method == "POST":
         post_info = request.form.to_dict()
 
@@ -205,6 +262,59 @@ def add_items_view():
         flash("Created new item", "success")
 
     return render_template("menu/UploadItems.html")
+
+
+@app.route("/confirm_offer/<offer_id>", methods=("GET", "POST"))
+@login_required
+def confirm_offer_route(offer_id: str):
+    offer = Offers.query.get(offer_id)
+
+    if offer is not None:
+
+        item = Item.query.get(offer.item_id)
+        requester = User.query.get(offer.user_id)
+
+        if item is not None and requester is not None:
+            owner = User.query.get(item.user_id)
+            if owner is not None and owner.id != current_user.id:
+                flash("Unauthorized.", "error")
+                return render_template("menu/FrackHubMenu.html", code=403)
+
+            if request.method == "POST":
+                if item.is_rented is True:
+                    flash("Item already being rented.", "error")
+
+                result = request.form.to_dict()
+                if "response" in result and item.is_rented is False:
+
+                    if result["response"] == "acc":
+                        flash("Successfully accepted request.", "success")
+
+                        # Sets the items rented status
+                        item.is_rented = True
+                        offer.answered = True
+                        db.session.commit()
+
+                        return redirect("/home")
+
+                    else:
+                        flash("Successfully declined request.", "success")
+                        offer.answered = True
+                        db.session.commit()
+                        return redirect("/home")
+
+            return render_template("menu/OrderConfimration.html",
+                                   requester=requester,
+                                   offer=offer,
+                                   item=item)
+
+        else:
+            flash("Unable to load offer.", "error")
+    else:
+        flash("Unable to load offer.", "error")
+
+    # offer_id
+    return render_template("menu/FrackHubMenu.html")
 
 
 @app.errorhandler(413)

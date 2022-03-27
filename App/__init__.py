@@ -1,11 +1,11 @@
 from flask import Flask, render_template, redirect, request, flash, send_file, url_for
-from .models import db, User, Item, Offers, Rented
+from .models import db, User, Item, Offers
 import os
 
 
 __all__ = ("create_app", "User", "Item", "render_template",
            "redirect", "request", "flash", "add_new_user", "send_file",
-           "url_for", "add_new_item", "Offers", "add_new_offer", "db", "Rented")
+           "url_for", "add_new_item", "Offers", "add_new_offer", "db")
 
 
 def create_app():
