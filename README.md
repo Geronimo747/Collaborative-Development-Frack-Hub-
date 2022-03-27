@@ -17,7 +17,7 @@ You need to install 3 packages:
 import App
 app = App.create_app()
 with app.app_context():
-  App.db.create_all()
+    App.db.create_all()
 ```
 
 ## Done, now to run the actual app.
