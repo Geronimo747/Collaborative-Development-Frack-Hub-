@@ -3,8 +3,6 @@ from flask_login.login_manager import LoginManager
 from flask_login import logout_user, login_required, login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta, datetime
-import flask_sqlalchemy
-from io import BytesIO
 import base64
 
 app = create_app()
@@ -98,7 +96,7 @@ def signup_route():
 
                 if form["DoB"]:
                     year, month, day = form["DoB"].split("-")
-                    dob = datetime(year=year, month=month, day=day)
+                    dob = datetime(year=int(year), month=int(month), day=int(day))
 
                 psw = SALT + form["pswd"]
                 new_user = User(name=f'{form["fname"]} {form["lname"]}', email=form["email"],
