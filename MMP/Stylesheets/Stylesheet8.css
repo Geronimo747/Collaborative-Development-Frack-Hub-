@@ -1,13 +1,9 @@
 #mainHeading{text-align-last: center}
 #heading2{text-align-last: center}
 #heading3{text-align-last: center}
-#heading4{text-align-last: center}
-#heading5{text-align-last: center}
-#heading6{text-align-last: center}
-#heading7{text-align-last: center}
-#heading8{text-align-last: center}
 #pin{text-align-last: center;}
 #pin1{text-align-last: center;}
+#pin2{text-align-last: center;}
 body{background-image: url("backdrop.jpg")}
 .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
 #navLink1{color: white}
@@ -18,6 +14,8 @@ body{background-image: url("backdrop.jpg")}
 #navLink3:hover{color: #A8A8A8}
 #navLink4{color: white}
 #navLink4:hover{color: #A8A8A8}
+#navLink5{color: #FFFF00;}
+#navLink5:hover{color: #FFFF00}
 #moderation1 {
     overflow-y: scroll;
     overflow-x: scroll;
@@ -26,3 +24,22 @@ body{background-image: url("backdrop.jpg")}
     resize: none; /* Remove this if you want the user to resize the textarea */
     border: 1px solid lightgray
 }
+#moderation2 {
+    overflow-y: scroll;
+    overflow-x: scroll;
+    height: 200px;
+    width: 100%;
+    resize: none; /* Remove this if you want the user to resize the textarea */
+    border: 1px solid lightgray
+}
+
+.table{width: 1700px; border-spacing: 15px}
+
+#acceptBtn{background-color: #1D6544; color: #FFFFFF}
+#acceptBtn:hover{background-color: #3A5347; color: #FFFFFF}
+#declineBtn{background-color: #AB1A28; color: #FFFFFF}
+#declineBtn:hover{background-color: #85202A; color: #FFFFFF}
+#banBtn{background-color: #AB1A28; color: #FFFFFF}
+#banBtn:hover{background-color: #85202A; color: #FFFFFF}
+#employBtn{background-color: #000000; color: #FFFF00;}
+#employBtn:hover{background-color: #555555; color: #FFFF00; transition: 0.3ms;}
