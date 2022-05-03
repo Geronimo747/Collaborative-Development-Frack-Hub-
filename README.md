@@ -12,12 +12,10 @@ You need to install 3 packages:
 
 *pip install [package]*
 
-## Run the following python script, either standalone or in a terminal *In the same directory as the App folder.*:
-```python
-import App
-app = App.create_app()
-with app.app_context():
-    App.db.create_all()
+## Initial setup, take note of the administrator password in the console.
+Account for admin is admin@frackhub.com, then the password displayed in console [If you lose it you need to delete then reinitialise the database.].
+```
+python set_up_database.py
 ```
 
 ## Done, now to run the actual app.
