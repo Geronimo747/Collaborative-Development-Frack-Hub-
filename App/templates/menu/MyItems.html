@@ -11,55 +11,41 @@
 <body>
 
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/home">FrackHub</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="mynavbar">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a id = "navLink1" class="nav-link" href="/my_items">My Item's</a>
-                </li>
-                <li class="nav-item">
-                    <a id = "navLink2" class="nav-link" href="/my_rented_items">My Item's Rented</a>
-                </li>
-                <li class="nav-item">
-                    <a id = "navLink3" class="nav-link" href="/search_items">Search Items</a>
-                </li>
-                <li class="nav-item">
-                    <a id = "navLink4" class="nav-link" href="/add_items">Upload Items</a>
-                </li>
-            </ul>
-        </div>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/home">FrackHub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a id = "navLink1" class="nav-link" href="/my_items">My Item's</a>
+        </li>
+        <li class="nav-item">
+          <a id = "navLink2" class="nav-link" href="/renting_items">My Item's Rented</a>
+        </li>
+        <li class="nav-item">
+          <a id = "navLink3" class="nav-link" href="/search_items">Search Items</a>
+        </li>
+        <li class="nav-item">
+          <a id = "navLink4" class="nav-link" href="/add_item">Add Items</a>
+        </li>
+        {% if employee %}
+            <li class="nav-item">
+                <a id = "navLink5" class="nav-link" href="/employee">Employee</a>
+            </li>
+        {% endif %}
+      </ul>
     </div>
+  </div>
 </nav>
-<br>
-<br>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            {% if category == "error" %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <span>{{ message }}</span>
-                </div>
-                {% elif category == "success" %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <span>{{ message }}</span>
-                </div>
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
 <br><br>
 
 <div class="container my-5 bg-white text-drk">
     <div id = "pin">
-        <img src="/static/images/site/pin.png" height="80">
+        <img src="/static/images/pin.png" height="80">
     </div>
-    <span style="font-size: 20px; background-color: #900C19; color: #FFFFFF; float: right;" class="badge">100</span>
+    <span style="font-size: 20px; background-color: #900C19; color: #FFFFFF; float: right;" class="badge">{{ user.credits }}</span>
     <h3 style="font-size: 26px; float: right; padding-right: 10px">Credits</h3>
     <h1 id = "mainHeading">FrackHub</h1>
     <hr>
@@ -67,40 +53,46 @@
 
     <div id = "container2" class="container my-5 bg-white text-drk">
         <div id = "pin1">
-            <img src="/static/images/site/pin.png" height="80">
+            <img src="/static/images/pin.png" height="80">
         </div>
         <h2 id = "heading2">My Item's</h2>
-        {% for item in items %}
-            <br>
-            <div id="card2" class="card" style="width:200px">
-                <img class="card-img-top" src="{{ item.image }}" alt="Card image" style="width:100%; height:130px;">
-                <div class="card-body">
-                    <h4 id = "card2Title" style = "color:blue" class="card-title">{{ item.name }}</h4>
-                {% if item.is_rented %}
-                    <div class="dropdown">
-                    Item is rented.
-                    </div>
+        <br>
 
-                {% elif offers[item.id] %}
-                    <br>
-                    <div class="dropdown">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                            Offers
-                        </button>
-                    <ul class="dropdown-menu">
-                        {% for y in offers[item.id] %}
-                            {% if not y.answered %}
-                                <li><a class="dropdown-item" href="/confirm_offer/{{ y["offer"].id }}">{{ y["user"].name }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
+        <li style="list-style-type: none;">
+            {% for item in items %}
+                <ul style="display: inline-block;">
+                    <div id = "card2" class="card" style="width:200px">
+                        <a href="/item/{{ item.id }}/"><img class="lazyload card-img-top" src="/item/{{ item.id }}/small_image" alt="Card image" style="height:130px;"></a>
+                        <div class="card-body">
+                            <h4 id = "card2Title" style = "color:blue" class="card-title">{{ item.name }}</h4>
+                            <br>
+                        {% if item.rented %}
+                            <button type="button" class="btn" data-bs-toggle="dropdown">
+                                    Item currently rented.
+                            </button>
+                        {% elif item.has_orders %}
+                            <div class="dropdown">
+                                <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                                    Offers
+                                </button>
+                            <ul class="dropdown-menu">
+                                {% for order in item.orders %}
+                                    {% if not order.responded %}
+                                        <li><a class="dropdown-item" href="/confirm_order/{{ order.id }}">{{ order.requester.name }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            </div>
+                        {% else %}
+                            <button type="button" class="btn" data-bs-toggle="dropdown">
+                                    No Offers
+                            </button>
+                        {% endif %}
+                        </div>
                     </div>
-                {% else %}
-                    <p>No offers.</p>
-                {% endif %}
-                </div>
-            </div>
-        {% endfor %}
+                </ul>
+            {% endfor %}
+        </li>
     </div>
 
 </body>

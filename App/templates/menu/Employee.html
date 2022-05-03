@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Employee</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="/static/css/stylesheet8.css">
+</head>
+<body>
+
+<form id="new_account" action="/employee" method="POST"></form>
+<form id="existing_account" action="/employee" method="POST"></form>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/home">FrackHub</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a id = "navLink1" class="nav-link" href="/my_items">My Item's</a>
+        </li>
+        <li class="nav-item">
+          <a id = "navLink2" class="nav-link" href="/renting_items">My Item's Rented</a>
+        </li>
+        <li class="nav-item">
+          <a id = "navLink3" class="nav-link" href="/search_items">Search Items</a>
+        </li>
+        <li class="nav-item">
+          <a id = "navLink4" class="nav-link" href="/add_item">Add Items</a>
+        </li>
+        {% if employee %}
+            <li class="nav-item">
+                <a id = "navLink5" class="nav-link" href="/employee">Employee</a>
+            </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<br>
+<br>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == "error" %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+                {% elif category == "success" %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<br><br>
+<div class="container my-5 bg-light text-drk">
+  <div id = "pin">
+    <img src="/static/images/pin.png" height="80">
+  </div>
+  <h1 id = "mainHeading">FrackHub</h1>
+  <hr>
+</div><br>
+
+<div id = "container2" class="container my-5 bg-light text-drk">
+  <div id = "pin1">
+    <img src="/static/images/pin.png" height="80"><br>
+    <h2 id = "heading2">Moderate New Accounts</h2><br>
+  </div>
+  <div id="moderation1">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><b>Name</b></th>
+                <th><b>Phone number</b></th>
+                <th><b>Date of Birth</b></th>
+                <th><b>Address</b></th>
+                <th><b>Postcode</b></th>
+                <th><b>Email</b></th>
+                <th><b>Accept</b></th>
+                <th><b>Decline</b></th>
+            </tr>
+        </thead>
+      <tbody id="reviewList">
+      {% for account in new_accounts %}
+          <tr>
+              <td>{{ account.name }}</td>
+              <td>{{ account.number }}</td>
+              <td>{{ account.dob.day }}/{{ account.dob.month }}/{{ account.dob.year }}</td>
+              <td>{{ account.address }}</td>
+              <td>{{ account.postcode }}</td>
+              <td>{{ account.email }}</td>
+              <td><button name="accept" value="{{ account.id }}" id="acceptBtn" type="submit" form="new_account" class="btn">Accept</button></td>
+              <td><button name="decline" value="{{ account.id }}" id="declineBtn" type="submit" form="new_account" class="btn">Decline</button></td>
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id = "container3" class="container my-5 bg-light text-drk">
+  <div id = "pin2">
+    <img src="/static/images/pin.png" height="80"><br>
+    <h2 id = "heading3">Moderate Existing Accounts</h2><br>
+  </div>
+  <div id="moderation2">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><b>Name</b></th>
+                <th><b>Phone number</b></th>
+                <th><b>Email</b></th>
+                <th><b>Suspend</b></th>
+                {% if current_user.user_type == 2 %}
+                    <th><b>Make Employee</b></th>
+                {% endif %}
+            </tr>
+        </thead>
+      <tbody id="reviewList1">
+      {% for user in existing_accounts %}
+          <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.number }}</td>
+              <td>{{ user.email }}</td>
+
+              <td>
+                  <form action="/employee" method="POST" enctype="multipart/form-data">
+                      <input min="{{ current_time.max_year }}-{{ current_time.month }}-{{ current_time.day }}" style="float: left;margin: 2px;" type="date" id="suspend" name="suspend">
+                      <button name="user" value="{{ user.id }}" style="float: left;margin: 2px;" id="banBtn" type="submit" class="btn">Suspend</button>
+                  </form>
+              </td>
+
+              {% if current_user.user_type == 2 %}
+                  {% if user.user_type == 0 %}
+                      <td><button name="make_employee" value="{{ user.id }}" id="employBtn" type="submit" form="existing_account" class="btn" >Make Employee</button></td>
+                  {% elif user.user_type == 1 %}
+                      <td><button name="disable_employee" value="{{ user.id }}" id="employBtn" type="submit" form="existing_account" class="btn" >Disable Employee</button></td>
+                  {% endif %}
+              {% endif %}
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

@@ -9,7 +9,7 @@
   <style>
     .btn{background-color: #0000ff; color: #FFFFFF;}
     .btn:hover{background-color: #40467D; color: #FFFFFF;}
-    body {background-image: url('static/images/login/backdrop.jpg');}
+    body {background-image: url('/static/images/backdrop.jpg');}
     #pin{text-align-last: center;}
     .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
   </style>
@@ -34,7 +34,7 @@
 
 <div class="container my-5 bg-white">
   <div id = "pin">
-    <img src="static/images/login/pin.png" height="80">
+    <img src="/static/images/pin.png" height="80">
   </div>
   <h2>Customer Sign up</h2>
   <form action="/signup" method="POST" enctype="multipart/form-data">
@@ -52,7 +52,7 @@
     </div>
 	<div class="mb-3 mt-3">
       <label for="DoB">Date of Birth:</label><br>
-      <input type="date" id="DoB" name="DoB">
+      <input type="date" id="DoB" name="DoB" min='{{ current_time.min_year }}-{{ current_time.month }}-{{ current_time.day }}' max='{{ current_time.max_year }}-{{ current_time.month }}-{{ current_time.day }}'>
     </div>
     <div class="mb-3 mt-3">
       <label for="Address">Address:</label>

@@ -11,8 +11,13 @@
 #navLink4{color: white}
 #navLink4:hover{color: #A8A8A8}
 .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
-body{background-image: url("/static/images/site/backdrop.jpg")}
+body{background-image: url("/static/images/backdrop.jpg")}
 .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
 #pin{text-align-last: center;}
 #pin1{text-align-last: center;}
 .card{height:290px; border: 1px solid lightgray; box-shadow: 0 5px 5px grey;}
+#searchInpt{float:left;}
+#searchBtn{float: right; background-color: #0000ff; color: white;}
+#searchBtn:hover{background-color: #40467D; color: #FFFFFF;transition: 0.2s;}
+.btn{background-color: #0000ff; color: white}
+.btn:hover{background-color: #40467D; color: #FFFFFF;transition: 0.2s;}
