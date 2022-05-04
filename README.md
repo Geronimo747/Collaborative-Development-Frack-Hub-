@@ -11,7 +11,7 @@ You need to install 4 packages:
 - Flask-SQLAlchemy
 - validators
 
-*pip install [package]*
+pip install **package**
 
 ## Initial setup, take note of the administrator password in the console.
 Account for admin is admin@frackhub.com, then the password displayed in console [If you lose it you need to delete then reinitialise the database.].
