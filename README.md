@@ -2,16 +2,16 @@
 Collaborative Development Frack Hub Project
 
 
-You need the app.py file and the templates folder with everything inside.
-(I advise you create a python virtual enviroment for this; but it's not required.)
+You need the set_up_database.py and main.py files and everything in the App folder.
+(*I advise you create a python virtual enviroment for this; but it's not required.*)
 
-You need to install 4 packages:
+You need to install 4 python packages:
 - flask
 - flask-login
 - Flask-SQLAlchemy
 - validators
 
-pip install **package**
+### pip install **package**
 
 ## Initial setup, take note of the administrator password in the console.
 Account for admin is admin@frackhub.com, then the password displayed in console [If you lose it you need to delete then reinitialise the database.].
