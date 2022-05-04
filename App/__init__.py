@@ -101,9 +101,10 @@ def save_image(content, size=200) -> tuple:
     file_data = content.stream.read()
     file_hash = sha512(file_data).hexdigest()
     file_name = f"{file_hash}{mime_types[content.mimetype.lower()]}"
+    ffmpeg_binary = f"\"{os.getcwd()}/bin/ffmpeg.exe\""
 
     # Creates the subprocess and subprocess command to shrink the image.
-    ffm_command = f"ffmpeg -v error -f {ffm_pipes[content.mimetype.lower()]} " \
+    ffm_command = f"{ffmpeg_binary} -v error -f {ffm_pipes[content.mimetype.lower()]} " \
                   f"-i - -vf scale=-1:{size} -f image2pipe -"
     proc = subprocess.Popen(ffm_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)

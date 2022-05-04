@@ -5,10 +5,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta, datetime
 import validators
 
-# FFMPEG used to resize image files quicker than PILLOW as it's written in C.
-os.environ["ffmpeg"] = f"{os.getcwd()}/bin/ffmpeg.exe"
-os.environ["ffprobe"] = f"{os.getcwd()}/bin/ffprobe.exe"
-os.environ["ffplay"] = f"{os.getcwd()}/bin/ffplay.exe"
 
 app = create_app()
 max_content_length = 8000000  # FILE LIMIT IS CURRENTLY 8mb
@@ -483,6 +479,7 @@ def renting_items_page():
 
     # The user is returning the item.
     if request.method == "POST":
+        form_data = request.form.to_dict()
 
         # Makes sure the user is verified
         if not current_user.verified:
@@ -490,7 +487,11 @@ def renting_items_page():
             return render_template("menu/MyItemsRented.html", employee=display_employee(),
                                    items=items, user=current_user), 401
 
-        form_data = request.form.to_dict()
+        elif current_user.suspended is not None:
+            if datetime.now() < current_user.suspended:
+                flash("You are currently suspended.", "error")
+                return render_template("menu/MyItemsRented.html", employee=display_employee(),
+                                       items=items, user=current_user), 401
 
         # The only value we need.
         if "return" in form_data:
@@ -545,11 +546,6 @@ def confirm_order_page(ORDER_ID: int):
         flash("Requesting user no longer exists.", "error")
         return redirect("/home")
 
-    # Requester does not have enough to pay for item.
-    if requester.credits < item.price:
-        flash("Requesting user does not have enough credits.", "error")
-        return redirect("/home")
-
     # If the user is responding to the order.
     if request.method == "POST":
 
@@ -560,6 +556,12 @@ def confirm_order_page(ORDER_ID: int):
             flash("You're not verified yet.", "error")
             return render_template("menu/OrderConfimration.html", employee=display_employee(),
                                    item=item, requester=requester, order=order), 401
+
+        elif current_user.suspended is not None:
+            if datetime.now() < current_user.suspended:
+                flash("You are currently suspended.", "error")
+                return render_template("menu/OrderConfimration.html", employee=display_employee(),
+                                       item=item, requester=requester, order=order), 401
 
         # Makes sure the field we need is in the form data.
         if "response" in form_data:
@@ -624,6 +626,12 @@ def search_items_page():
             return render_template("menu/SearchItems.html", employee=display_employee(),
                                    user=current_user, items=result), 401
 
+        elif current_user.suspended is not None:
+            if datetime.now() < current_user.suspended:
+                flash("You are currently suspended.", "error")
+                return render_template("menu/SearchItems.html", employee=display_employee(),
+                                       user=current_user, items=result), 401
+
         if "search" in form_data:
             words = [f"%{x}%" for x in form_data["search"].split()]
             items = []
@@ -643,8 +651,6 @@ def search_items_page():
             if item is not None and item:
                 if item in current_user.items:
                     flash("You own this item.", "error")
-                elif item.price > current_user.credits:
-                    flash("You don't have enough credits.", "error")
                 else:
                     rent_error = False
 
@@ -700,6 +706,11 @@ def add_item_page():
         if not current_user.verified:
             flash("You are not verified.", "error")
             return render_template("menu/UploadItems.html", employee=display_employee()), 401
+
+        elif current_user.suspended is not None:
+            if datetime.now() < current_user.suspended:
+                flash("You are currently suspended.", "error")
+                return render_template("menu/UploadItems.html", employee=display_employee()), 401
 
         # Makes sure all items are present in from data.
         items_in_form = ("Price", "name", "description")
@@ -772,4 +783,7 @@ def request_entity_too_large(error):
 
 
 if __name__ == "__main__":
+    if not os.path.exists(f"{os.getcwd()}/bin/ffmpeg.exe"):
+        raise RuntimeError(f"You do not have the ffmpeg binary installed at \"{os.getcwd()}/bin/ffmpeg.exe\"")
+
     app.run(debug=True)
