@@ -17,3 +17,5 @@ body{background-image: url("backdrop.jpg")}
 .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
 #pin{text-align-last: center;}
 #pin1{text-align-last: center;}
+.btn{background-color: #0000ff; color: white}
+.btn:hover{background-color: #40467D; color: #FFFFFF;transition: 0.2s;}
