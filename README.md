@@ -2,7 +2,7 @@
 Collaborative Development Frack Hub Project
 
 
-You need the set_up_database.py and main.py files and everything in the App folder.\
+You need the **set_up_database.py** and **main.py** files and everything in the **App folder**.\
 (*I advise you create a python virtual enviroment for this; but it's not required.*)
 
 You need to install 4 python packages:
