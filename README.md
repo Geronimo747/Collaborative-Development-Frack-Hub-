@@ -5,7 +5,7 @@ Collaborative Development Frack Hub Project
 You need the **set_up_database.py** and **main.py** files and the **App folder** with everything inside it.\
 (*I advise you create a python virtual enviroment for this; but it's not required.*)\
 You also need ffmpeg (https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip) \
-Unpack the zip file then move the Bin folder containing the ffmpeg binaries next to the files listed above.\
+Unpack the zip file then move the Bin folder containing the ffmpeg binaries next to the files listed above.
 
 You need to install 4 python packages:
 - flask
