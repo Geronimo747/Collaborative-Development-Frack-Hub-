@@ -9,6 +9,7 @@ You need to install 3 packages:
 - flask
 - flask-login
 - Flask-SQLAlchemy
+- validators
 
 *pip install [package]*
 
