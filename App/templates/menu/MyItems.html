@@ -28,7 +28,7 @@
           <a id = "navLink3" class="nav-link" href="/search_items">Search Items</a>
         </li>
         <li class="nav-item">
-          <a id = "navLink4" class="nav-link" href="/add_item">Add Items</a>
+          <a id = "navLink4" class="nav-link" href="/add_item">Add Item</a>
         </li>
         {% if employee %}
             <li class="nav-item">
@@ -36,9 +36,33 @@
             </li>
         {% endif %}
       </ul>
+      <ul class="navbar-nav ms-auto">
+        <li id="lastList" class="nav-item">
+          <a id = "navLink6" class="nav-link" href="/logout">Log Out</a>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>
+
+<br><br>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == "error" %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+                {% elif category == "success" %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
 <br><br>
 
 <div class="container my-5 bg-white text-drk">

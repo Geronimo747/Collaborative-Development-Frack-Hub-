@@ -9,6 +9,7 @@ import validators
 app = create_app()
 max_content_length = 8000000  # FILE LIMIT IS CURRENTLY 8mb
 app.config["MAX_CONTENT_LENGTH"] = max_content_length
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 1
 login_manager = LoginManager(app=app)
 SALT = "CHEESE"
 accepted_mime_types = {"image/png", "image/jpeg", "image/jpg"}
@@ -39,6 +40,7 @@ def display_employee() -> bool:
 #   item image
 #   list of renting items
 #   confirm order
+#   logout
 #   search items
 #   add item
 
@@ -356,7 +358,7 @@ def employee_page():
                     flash("Cannot suspend an admin.", "error")
                 else:
                     year, month, day = form_data["suspend"].split("-")
-                    sus_time = datetime(year=year, month=month, day=day)
+                    sus_time = datetime(year=int(year), month=int(month), day=int(day))
                     user.suspended = sus_time
                     db.session.commit()
                     flash(f"User has been suspended until "
@@ -384,6 +386,12 @@ def view_item_page(ITEM_ID: int):
         The ID of the item in the database.
     """
 
+    def __render_template__():
+        return render_template("menu/ItemView.html", employee=display_employee(), exists=1,
+                               item=item, rating=rating, user=user, current_user=current_user,
+                               img_url=f"/item/{ITEM_ID}/image", renting_user=renting_user,
+                               item_status=item_status)
+
     # Checks to see if the item exists.
     item = Items.query.get(int(ITEM_ID))
     if not item or item is None:
@@ -396,6 +404,8 @@ def view_item_page(ITEM_ID: int):
 
     rating = None
     renting_user = False
+
+    # TODO: Check if user has outstanding offer
 
     # Gets the info on the person renting the item currently.
     if item.rented:
@@ -410,14 +420,61 @@ def view_item_page(ITEM_ID: int):
         count = 0
 
         for x in item.ratings:
-            total += x
+            total += x.rating
             count += 1
 
         rating = round(total / count, 1)
 
-    return render_template("menu/ItemView.html", employee=display_employee(), exists=1,
-                           item=item, rating=rating, user=user, current_user=current_user,
-                           img_url=f"/item/{ITEM_ID}/image", renting_user=renting_user)
+    # Item states: 0 = Can't order, 1 = Can order
+    item_status = 0
+
+    # Checks if the user can request to rent the item.
+    if current_user.id != item.user_id:
+
+        order = Orders.query.filter(
+            Orders.item_id == item.id
+        ).filter(
+            Orders.requester_id == current_user.id
+        ).filter(
+            Orders.responded == 0
+        ).first()
+
+        if renting_user and renting_user.id != current_user.id or not renting_user:
+            if order is None or not order:
+                item_status = 1
+
+    if request.method == "POST":
+
+        # Removes all flash messages.
+        session.pop('_flashes', None)
+
+        form_data = request.form.to_dict()
+
+        if current_user.suspended is not None:
+            if datetime.now() < current_user.suspended:
+                flash("You are currently suspended.", "error")
+                return __render_template__(), 401
+            else:
+                current_user.suspended = None
+                db.session.commit()
+
+        if "submit" in form_data and form_data["submit"] == "offer" and item is not None and item:
+            if not item_status:
+                flash("You cannot request this item. "
+                      "[ You either own it or you're renting it or you have a pending request for it. ]",
+                      "error")
+                return __render_template__()
+
+            else:
+                new_order = Orders(
+                    item_id=item.id,
+                    requester_id=current_user.id
+                )
+                add_new_offer(new_order)
+                flash("Successfully made offer request.", "success")
+                item_status = 0
+
+    return __render_template__()
 
 
 @app.route("/item/<ITEM_ID>/image", methods=("GET",))
@@ -481,6 +538,8 @@ def renting_items_page():
     if request.method == "POST":
         form_data = request.form.to_dict()
 
+        print(form_data)
+
         # Makes sure the user is verified
         if not current_user.verified:
             flash("You're not verified yet.", "error")
@@ -492,6 +551,9 @@ def renting_items_page():
                 flash("You are currently suspended.", "error")
                 return render_template("menu/MyItemsRented.html", employee=display_employee(),
                                        items=items, user=current_user), 401
+            else:
+                current_user.suspended = None
+                db.session.commit()
 
         # The only value we need.
         if "return" in form_data:
@@ -499,6 +561,15 @@ def renting_items_page():
 
             if item is not None and item in items:
                 items.remove(item)
+
+                if "rating" in form_data:
+                    new_rating = Ratings(
+                        user_id=current_user.id,
+                        rating=int(form_data["rating"]),
+                        item_id=item.id
+                    )
+                    db.session.add(new_rating)
+                    item.rent_count += 1
 
                 # Sets the item values back to nothing.
                 item.rented = 0
@@ -562,6 +633,9 @@ def confirm_order_page(ORDER_ID: int):
                 flash("You are currently suspended.", "error")
                 return render_template("menu/OrderConfimration.html", employee=display_employee(),
                                        item=item, requester=requester, order=order), 401
+            else:
+                current_user.suspended = None
+                db.session.commit()
 
         # Makes sure the field we need is in the form data.
         if "response" in form_data:
@@ -579,6 +653,17 @@ def confirm_order_page(ORDER_ID: int):
 
     return render_template("menu/OrderConfimration.html", employee=display_employee(),
                            item=item, requester=requester, order=order)
+
+
+@app.route("/logout", methods=("GET", "POST"))
+@login_required
+def logout_button():
+    """
+    A url to log out user.
+    """
+    logout_user()
+    flash("Successfully logged out.", "success")
+    return redirect("/login")
 
 
 @app.route("/search_items", methods=("GET", "POST"))
@@ -631,8 +716,14 @@ def search_items_page():
                 flash("You are currently suspended.", "error")
                 return render_template("menu/SearchItems.html", employee=display_employee(),
                                        user=current_user, items=result), 401
+            else:
+                current_user.suspended = None
+                db.session.commit()
 
-        if "search" in form_data:
+        if "button" in form_data and form_data["button"] == "clear":
+            return redirect("/search_items")
+
+        elif "button" in form_data and form_data["button"] == "submit" and "search" in form_data:
             words = [f"%{x}%" for x in form_data["search"].split()]
             items = []
 
@@ -711,6 +802,9 @@ def add_item_page():
             if datetime.now() < current_user.suspended:
                 flash("You are currently suspended.", "error")
                 return render_template("menu/UploadItems.html", employee=display_employee()), 401
+            else:
+                current_user.suspended = None
+                db.session.commit()
 
         # Makes sure all items are present in from data.
         items_in_form = ("Price", "name", "description")

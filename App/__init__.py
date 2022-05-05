@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, flash, \
     send_file, url_for, session, send_from_directory
 
-from .models import db, Users, Items, Orders, Transactions, TransactionType, UserType
+from .models import db, Users, Items, Orders, Transactions, TransactionType, UserType, Ratings
 import os
 from datetime import datetime, timedelta
 from hashlib import sha512
@@ -12,7 +12,7 @@ __all__ = ("create_app", "Users", "Items", "render_template",
            "url_for", "add_new_item", "Orders", "add_new_offer", "db",
            "session", "check_age", "CurrentDate", "save_image",
            "send_from_directory", "os", "complete_accept_order",
-           "UserType")
+           "UserType", "Ratings")
 
 
 def create_app():

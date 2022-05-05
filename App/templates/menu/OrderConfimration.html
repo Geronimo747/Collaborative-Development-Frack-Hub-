@@ -12,7 +12,6 @@
 
 <form id="response" action="/confirm_order/{{ order.id }}" method="POST"></form>
 
-
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
   <div class="container-fluid">
     <a class="navbar-brand" href="/home">FrackHub</a>
@@ -31,13 +30,18 @@
           <a id = "navLink3" class="nav-link" href="/search_items">Search Items</a>
         </li>
         <li class="nav-item">
-          <a id = "navLink4" class="nav-link" href="/add_item">Add Items</a>
+          <a id = "navLink4" class="nav-link" href="/add_item">Add Item</a>
         </li>
         {% if employee %}
             <li class="nav-item">
                 <a id = "navLink5" class="nav-link" href="/employee">Employee</a>
             </li>
         {% endif %}
+      </ul>
+      <ul class="navbar-nav ms-auto">
+        <li id="lastList" class="nav-item">
+          <a id = "navLink6" class="nav-link" href="/logout">Log Out</a>
+        </li>
       </ul>
     </div>
   </div>
@@ -58,7 +62,6 @@
                 </div>
             {% endif %}
         {% endfor %}
-        <br><br>
     {% endif %}
 {% endwith %}
 
@@ -91,6 +94,12 @@
     <button id="declineBtn" type="submit" form="response" class="btn" name="response" value="dec">Decline</button>
     <div style="clear: both"></div>
 </div>
+
+<script>
+    if ( window.history.replaceState ) {
+      window.history.replaceState( null, null, window.location.href );
+    }
+</script>
 
 </body>
 </html>

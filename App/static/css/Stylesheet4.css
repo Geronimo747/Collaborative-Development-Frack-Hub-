@@ -10,6 +10,8 @@
 #navLink3:hover{color: #A8A8A8}
 #navLink4{color: white}
 #navLink4:hover{color: #A8A8A8}
+#navLink5{color: #FFFF00}
+#navLink5:hover{color: #a6a633;}
 .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
 body{background-image: url("/static/images/backdrop.jpg")}
 .container{padding-bottom: 30px; padding-left: 30px; padding-right: 30px}
@@ -17,7 +19,9 @@ body{background-image: url("/static/images/backdrop.jpg")}
 #pin1{text-align-last: center;}
 .card{height:290px; border: 1px solid lightgray; box-shadow: 0 5px 5px grey;}
 #searchInpt{float:left;}
-#searchBtn{float: right; background-color: #0000ff; color: white;}
-#searchBtn:hover{background-color: #40467D; color: #FFFFFF;transition: 0.2s;}
+#searchBtn{width: 8%; margin: 2px; float: right; background-color: #0000ff; color: white;}
+#clearBtn{width: 8%; margin: 2px; float: right; background-color: #0000ff; color: white;}
+#searchBtn:hover{background-color: #40467D; color: #3CB371;transition: 0.2s;}
+#clearBtn:hover{background-color: #40467D; color: #FA8072;transition: 0.2s;}
 .btn{background-color: #0000ff; color: white}
 .btn:hover{background-color: #40467D; color: #FFFFFF;transition: 0.2s;}
